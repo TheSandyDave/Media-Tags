@@ -10,10 +10,11 @@ import (
 	"github.com/TheSandyDave/Media-Tags/utils"
 	"github.com/google/uuid"
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 )
 
 // compile time check for the struct implementing the interface
-var _ BaseService[domain.IDbObject] = (*baseService[domain.IDbObject])(nil)
+var _ IBaseService[domain.IDbObject] = (*baseService[domain.IDbObject])(nil)
 
 type baseService[T domain.IDbObject] struct {
 	Database *gorm.DB
@@ -21,7 +22,7 @@ type baseService[T domain.IDbObject] struct {
 
 type Option[T domain.IDbObject] func(*gorm.DB) *gorm.DB
 
-type BaseService[T domain.IDbObject] interface {
+type IBaseService[T domain.IDbObject] interface {
 	Get(ctx context.Context, options ...Option[T]) ([]*T, error)
 	GetWithID(ctx context.Context, id uuid.UUID, options ...Option[T]) (*T, error)
 	GetWithIDs(ctx context.Context, ids []uuid.UUID, options ...Option[T]) ([]*T, error)
@@ -32,7 +33,7 @@ type BaseService[T domain.IDbObject] interface {
 func (service *baseService[T]) Get(ctx context.Context, options ...Option[T]) ([]*T, error) {
 	logger := utils.NewLogger(ctx)
 
-	dbQuery := service.Database.WithContext(ctx)
+	dbQuery := service.Database.WithContext(ctx).Preload(clause.Associations)
 	for _, option := range options {
 		dbQuery = option(dbQuery)
 	}

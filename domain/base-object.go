@@ -33,6 +33,6 @@ func (baseObject *BaseObject) BeforeCreate(_ *gorm.DB) error {
 	return nil
 }
 
-func (BaseObject *BaseObject) GetID() uuid.UUID {
+func (BaseObject BaseObject) GetID() uuid.UUID {
 	return BaseObject.ID
 }

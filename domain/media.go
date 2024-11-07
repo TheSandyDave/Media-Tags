@@ -1,10 +1,8 @@
 package domain
 
-import "net/url"
-
 type Media struct {
 	BaseObject
 	Name    string
-	Tags    []*Tag
-	FileUrl url.URL
+	Tags    []*Tag `gorm:"many2many:media_tags;constaint:OnUpdate:CASCADE,OnDelete:CASCADE"`
+	FileUrl string
 }
