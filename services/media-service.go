@@ -27,6 +27,6 @@ func NewMediaService(db *gorm.DB) IMediaService {
 
 func (service *mediaService) FilterByTagOption(tag string) Option[domain.Media] {
 	return func(db *gorm.DB) *gorm.DB {
-		return db.Joins("INNER JOIN media_tags  as mt on media.id = mt.media_id").Joins("INNER JOIN tags on mt.tag_id = tags.id").Where("tags.name = ?", tag).Group("media.id")
+		return db.Joins("INNER JOIN media_tags  as mt on media.id = mt.media_id").Joins("INNER JOIN tags on mt.tag_id = tags.id").Where("tags.name = ?", tag)
 	}
 }

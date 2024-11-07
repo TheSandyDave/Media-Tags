@@ -1,0 +1,327 @@
+{
+  "openapi" : "3.0.3",
+  "info" : {
+    "description" : "API for managing tags and media items",
+    "title" : "Tag and Media API",
+    "version" : "1.0.0"
+  },
+  "servers" : [ {
+    "url" : "/"
+  } ],
+  "tags" : [ {
+    "name" : "Tags"
+  }, {
+    "name" : "Media"
+  } ],
+  "paths" : {
+    "/tags" : {
+      "get" : {
+        "operationId" : "getTags",
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "items" : {
+                    "$ref" : "#/components/schemas/Tag"
+                  },
+                  "type" : "array"
+                }
+              }
+            },
+            "description" : "A list of tags"
+          }
+        },
+        "summary" : "Get all tags",
+        "tags" : [ "Tags" ]
+      },
+      "post" : {
+        "operationId" : "createTag",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/CreateTag"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "201" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Tag"
+                }
+              }
+            },
+            "description" : "Tag created successfully"
+          }
+        },
+        "summary" : "Create a new tag",
+        "tags" : [ "Tags" ]
+      }
+    },
+    "/tags/{id}" : {
+      "get" : {
+        "operationId" : "getTagById",
+        "parameters" : [ {
+          "description" : "The ID of the tag to retrieve (UUID)",
+          "explode" : false,
+          "in" : "path",
+          "name" : "id",
+          "required" : true,
+          "schema" : {
+            "format" : "uuid",
+            "type" : "string"
+          },
+          "style" : "simple"
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Tag"
+                }
+              }
+            },
+            "description" : "A tag object"
+          },
+          "404" : {
+            "description" : "Tag not found"
+          }
+        },
+        "summary" : "Get a tag by ID",
+        "tags" : [ "Tags" ]
+      }
+    },
+    "/media" : {
+      "get" : {
+        "operationId" : "getMedia",
+        "parameters" : [ {
+          "description" : "The name of the tag to filter media by",
+          "explode" : true,
+          "in" : "query",
+          "name" : "tag",
+          "required" : false,
+          "schema" : {
+            "type" : "string"
+          },
+          "style" : "form"
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "items" : {
+                    "$ref" : "#/components/schemas/Media"
+                  },
+                  "type" : "array"
+                }
+              }
+            },
+            "description" : "A list of media items, optionally filtered by tag name"
+          }
+        },
+        "summary" : "Get all media items",
+        "tags" : [ "Media" ]
+      },
+      "post" : {
+        "operationId" : "createMedia",
+        "requestBody" : {
+          "content" : {
+            "multipart/form-data" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/createMedia_request"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "201" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/MediaResponse"
+                }
+              }
+            },
+            "description" : "Media item created successfully"
+          }
+        },
+        "summary" : "Create new media",
+        "tags" : [ "Media" ]
+      }
+    },
+    "/media/{id}" : {
+      "get" : {
+        "operationId" : "getMediaById",
+        "parameters" : [ {
+          "description" : "The ID of the media item to retrieve (UUID)",
+          "explode" : false,
+          "in" : "path",
+          "name" : "id",
+          "required" : true,
+          "schema" : {
+            "format" : "uuid",
+            "type" : "string"
+          },
+          "style" : "simple"
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Media"
+                }
+              }
+            },
+            "description" : "A media item object"
+          },
+          "404" : {
+            "description" : "Media item not found"
+          }
+        },
+        "summary" : "Get a media item by ID",
+        "tags" : [ "Media" ]
+      }
+    }
+  },
+  "components" : {
+    "schemas" : {
+      "Tag" : {
+        "properties" : {
+          "id" : {
+            "example" : "123e4567-e89b-12d3-a456-426614174000",
+            "format" : "uuid",
+            "type" : "string"
+          },
+          "name" : {
+            "example" : "Champions League",
+            "type" : "string"
+          }
+        },
+        "required" : [ "id", "name" ],
+        "type" : "object"
+      },
+      "CreateTag" : {
+        "properties" : {
+          "name" : {
+            "example" : "Champions League",
+            "type" : "string"
+          }
+        },
+        "required" : [ "name" ],
+        "type" : "object"
+      },
+      "Media" : {
+        "properties" : {
+          "id" : {
+            "example" : "c906cbbf-1a25-4a99-b223-34bcf6e3b8a7",
+            "format" : "uuid",
+            "type" : "string"
+          },
+          "name" : {
+            "example" : "super nice picture",
+            "type" : "string"
+          },
+          "tags" : {
+            "example" : [ "Zinedine Zidane", "Real Madrid", "Champions League" ],
+            "items" : {
+              "description" : "Names of the tags associated with the media item",
+              "type" : "string"
+            },
+            "type" : "array"
+          },
+          "fileUrl" : {
+            "example" : "https://some_url.com/file.jpg",
+            "format" : "uri",
+            "type" : "string"
+          }
+        },
+        "required" : [ "fileUrl", "id", "name" ],
+        "type" : "object"
+      },
+      "CreateMedia" : {
+        "properties" : {
+          "name" : {
+            "example" : "super nice picture",
+            "type" : "string"
+          },
+          "tags" : {
+            "example" : [ "abc12345-6789-0123-4567-89abcdef0123", "xyz12345-6789-0123-4567-89abcdef0456" ],
+            "items" : {
+              "description" : "UUID of the tag associated with the media item",
+              "format" : "uuid",
+              "type" : "string"
+            },
+            "type" : "array"
+          },
+          "file" : {
+            "description" : "The media file to upload",
+            "format" : "binary",
+            "type" : "string"
+          }
+        },
+        "required" : [ "file", "name", "tags" ],
+        "type" : "object"
+      },
+      "MediaResponse" : {
+        "properties" : {
+          "id" : {
+            "example" : "c906cbbf-1a25-4a99-b223-34bcf6e3b8a7",
+            "format" : "uuid",
+            "type" : "string"
+          },
+          "name" : {
+            "example" : "super nice picture",
+            "type" : "string"
+          },
+          "tags" : {
+            "example" : [ "Zinedine Zidane", "Real Madrid", "Champions League" ],
+            "items" : {
+              "description" : "Names of the tags associated with the media item",
+              "type" : "string"
+            },
+            "type" : "array"
+          },
+          "fileUrl" : {
+            "example" : "https://some_url.com/file.jpg",
+            "format" : "uri",
+            "type" : "string"
+          }
+        },
+        "required" : [ "fileUrl", "id", "name" ],
+        "type" : "object"
+      },
+      "createMedia_request" : {
+        "properties" : {
+          "name" : {
+            "example" : "super nice picture",
+            "type" : "string"
+          },
+          "tags" : {
+            "example" : [ "abc12345-6789-0123-4567-89abcdef0123", "xyz12345-6789-0123-4567-89abcdef0456" ],
+            "items" : {
+              "description" : "UUID of the tag associated with the media item",
+              "format" : "uuid",
+              "type" : "string"
+            },
+            "type" : "array"
+          },
+          "file" : {
+            "description" : "The media file to upload",
+            "format" : "binary",
+            "type" : "string"
+          }
+        },
+        "type" : "object"
+      }
+    }
+  }
+}

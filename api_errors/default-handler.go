@@ -13,6 +13,6 @@ func DefaultErrorHandler(ctx context.Context, err error) (int, any) {
 	logger.WithError(err).Warn("no error handler found for error")
 
 	return http.StatusInternalServerError, ErrorResponse{
-		Error: err.Error(),
+		Error: "Internal server error",
 	}
 }

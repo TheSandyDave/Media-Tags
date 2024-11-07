@@ -1,0 +1,48 @@
+{{>partial_header}}
+package {{packageName}}
+
+import (
+	"net/http"
+
+	"github.com/gin-gonic/gin"
+)
+
+// Route is the information for every URI.
+type Route struct {
+	// Name is the name of this Route.
+	Name		string
+	// Method is the string for the HTTP method. ex) GET, POST etc..
+	Method		string
+	// Pattern is the pattern of the URI.
+	Pattern	 	string
+	// HandlerFunc is the handler function of this route.
+	HandlerFunc	gin.HandlerFunc
+}
+// list of generated routes
+type Routes []Route
+
+type Handlers struct {
+	{{#apiInfo}}{{#apis}}{{#operations}}{{#operation}}
+	{{operationId}} func(c *gin.Context)
+	{{/operation}}{{/operations}}{{/apis}}{{/apiInfo}}
+}
+
+func GetRoutes(handlers Handlers) Routes {
+	return Routes{
+	{{#apiInfo}}{{#apis}}{{#operations}}{{#operation}}
+	{
+		"{{operationId}}",
+		http.Method{{httpMethod}},
+		"{{{basePathWithoutHost}}}{{{path}}}",
+		handlers.{{operationId}},
+	},
+	{{/operation}}{{/operations}}{{/apis}}{{/apiInfo}}
+	}
+}
+
+// decorate a gin Engine with routes
+func Decorate(router *gin.Engine, routes Routes) {
+	for _, route := range routes {
+		router.Handle(route.Method, route.Pattern, route.HandlerFunc)
+	}
+}

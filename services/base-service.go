@@ -84,7 +84,7 @@ func (service *baseService[T]) GetWithIDs(ctx context.Context, ids []uuid.UUID, 
 	}
 
 	var result []*T
-	if err := dbQuery.First(&result, ids).Error; err != nil {
+	if err := dbQuery.Find(&result, ids).Error; err != nil {
 
 		logger.
 			WithField("model", reflect.TypeFor[T]().String()).

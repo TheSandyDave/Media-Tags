@@ -1,0 +1,9 @@
+generated/api/README.md
+generated/api/api_media.go
+generated/api/api_tags.go
+generated/api/model_create_media.go
+generated/api/model_create_tag.go
+generated/api/model_media.go
+generated/api/model_media_response.go
+generated/api/model_tag.go
+generated/api/routers.go

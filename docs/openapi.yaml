@@ -1,0 +1,252 @@
+openapi: 3.0.3
+info:
+  title: Tag and Media API
+  description: API for managing tags and media items
+  version: 1.0.0
+
+# Define the tags used to group operations
+tags:
+  - name: Tags
+  - name: Media
+
+paths:
+
+  /tags:
+    get:
+      summary: Get all tags
+      operationId: getTags
+      tags:
+        - Tags
+      responses:
+        '200':
+          description: A list of tags
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Tag'
+    post:
+      summary: Create a new tag
+      operationId: createTag
+      tags:
+        - Tags
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateTag'
+      responses:
+        '201':
+          description: Tag created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Tag'
+
+  /tags/{id}:
+    get:
+      summary: Get a tag by ID
+      operationId: getTagById
+      tags:
+        - Tags
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The ID of the tag to retrieve (UUID)
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: A tag object
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Tag'
+        '404':
+          description: Tag not found
+
+  /media:
+    get:
+      summary: Get all media items
+      operationId: getMedia
+      tags:
+        - Media
+      parameters:
+        - name: tag
+          in: query
+          required: false
+          description: The name of the tag to filter media by
+          schema:
+            type: string
+      responses:
+        '200':
+          description: A list of media items, optionally filtered by tag name
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Media'
+    post:
+      summary: Create new media
+      operationId: createMedia
+      tags:
+        - Media
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: "super nice picture"
+                tags:
+                  type: array
+                  items:
+                    type: string
+                    format: uuid
+                    description: "UUID of the tag associated with the media item"
+                  example: ["abc12345-6789-0123-4567-89abcdef0123", "xyz12345-6789-0123-4567-89abcdef0456"]
+                file:
+                  type: string
+                  format: binary
+                  description: "The media file to upload"
+      responses:
+        '201':
+          description: Media item created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MediaResponse'
+
+  /media/{id}:
+    get:
+      summary: Get a media item by ID
+      operationId: getMediaById
+      tags:
+        - Media
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The ID of the media item to retrieve (UUID)
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: A media item object
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Media'
+        '404':
+          description: Media item not found
+
+# -------------------------------
+# COMPONENTS SECTION
+# -------------------------------
+components:
+  schemas:
+    # TAGS SCHEMAS
+    Tag:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: "123e4567-e89b-12d3-a456-426614174000"
+        name:
+          type: string
+          example: "Champions League"
+      required:
+        - id
+        - name
+
+    CreateTag:
+      type: object
+      properties:
+        name:
+          type: string
+          example: "Champions League"
+      required:
+        - name
+
+    # MEDIA SCHEMAS
+    Media:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: "c906cbbf-1a25-4a99-b223-34bcf6e3b8a7"
+        name:
+          type: string
+          example: "super nice picture"
+        tags:
+          type: array
+          items:
+            type: string
+            description: "Names of the tags associated with the media item"
+          example: ["Zinedine Zidane", "Real Madrid", "Champions League"]
+        fileUrl:
+          type: string
+          format: uri
+          example: "https://some_url.com/file.jpg"
+      required:
+        - id
+        - name
+        - fileUrl
+
+    CreateMedia:
+      type: object
+      properties:
+        name:
+          type: string
+          example: "super nice picture"
+        tags:
+          type: array
+          items:
+            type: string
+            format: uuid
+            description: "UUID of the tag associated with the media item"
+          example: ["abc12345-6789-0123-4567-89abcdef0123", "xyz12345-6789-0123-4567-89abcdef0456"]
+        file:
+          type: string
+          format: binary
+          description: "The media file to upload"
+      required:
+        - name
+        - tags
+        - file
+
+    MediaResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: "c906cbbf-1a25-4a99-b223-34bcf6e3b8a7"
+        name:
+          type: string
+          example: "super nice picture"
+        tags:
+          type: array
+          items:
+            type: string
+            description: "Names of the tags associated with the media item"
+          example: ["Zinedine Zidane", "Real Madrid", "Champions League"]
+        fileUrl:
+          type: string
+          format: uri
+          example: "https://some_url.com/file.jpg"
+      required:
+        - id
+        - name
+        - fileUrl
