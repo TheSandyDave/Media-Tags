@@ -2,7 +2,6 @@ package controllers
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"mime/multipart"
 	"path/filepath"
@@ -79,11 +78,11 @@ func (controller *MediaController) CreateTag(c *gin.Context) {
 			}
 		}
 		if input.File == nil {
-			return nil, errors.New("Missing file")
+			return nil, apierrors.NewRequiredValueMissingError("file")
 		}
 		//validate that the content is an image
 		if !strings.Contains(input.File.Header.Get("Content-Type"), "image") {
-			return nil, errors.New("Uploaded file must be an image")
+			return nil, apierrors.NewInvalidFileTypeError("image")
 		}
 
 		// replace the file name with a UUID to avoid overwritting if multiple uploads have the same name

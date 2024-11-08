@@ -83,6 +83,8 @@ func (api *TaggedMediaAPI) configureErrorHandlers(ctx context.Context) {
 	ginerr.RegisterErrorHandlerOn(errorRegistry, apierrors.HandleInvalidTagsError)
 	ginerr.RegisterErrorHandlerOn(errorRegistry, apierrors.HandleInvalidUUIDError)
 	ginerr.RegisterErrorHandlerOn(errorRegistry, apierrors.HandleRecordNotFoundError)
+	ginerr.RegisterErrorHandlerOn(errorRegistry, apierrors.HandleInvalidFileTypeError)
+	ginerr.RegisterErrorHandlerOn(errorRegistry, apierrors.HandleRequiredValueMissingError)
 
 	errorRegistry.RegisterDefaultHandler(apierrors.DefaultErrorHandler)
 
@@ -118,6 +120,12 @@ func (api *TaggedMediaAPI) configureControllers() {
 func (api *TaggedMediaAPI) configureRoutes() {
 	// Setup swagger UI
 	api.router.GET("/swagger/*any", gin.WrapH(http.StripPrefix("/swagger", swaggerui.Handler(api.Spec))))
+
+	//redirect default path to swagger
+	api.router.GET("/", func(c *gin.Context) {
+		c.Request.URL.Path = "/swagger"
+		api.router.HandleContext(c)
+	})
 
 	// Media file storage
 	api.router.StaticFS("/files", gin.Dir("static", false))
