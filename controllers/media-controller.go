@@ -93,8 +93,8 @@ func (controller *MediaController) CreateMedia(c *gin.Context) {
 
 		if input.Name == "" {
 			return nil, apierrors.NewRequiredValueMissingError("name")
-
 		}
+
 		// replace the file name with a UUID to avoid overwritting if multiple uploads have the same name
 		filename := fmt.Sprintf("%s%s", uuid.NewString(), filepath.Ext(input.File.Filename))
 
