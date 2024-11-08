@@ -8,6 +8,7 @@ import (
 // compile time check for the struct implementing the interface
 var _ ITagService = (*tagService)(nil)
 
+//go:generate go run go.uber.org/mock/mockgen -source $GOFILE -typed -destination ../generated/mock/services/mock_$GOFILE ITagService
 type ITagService interface {
 	IBaseService[domain.Tag]
 }

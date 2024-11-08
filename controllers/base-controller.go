@@ -77,5 +77,5 @@ func getWithID[Output any, F function[uuid.UUID, Output]](c *gin.Context, callba
 		return
 	}
 
-	c.JSON(http.StatusCreated, output)
+	c.JSON(http.StatusOK, output)
 }

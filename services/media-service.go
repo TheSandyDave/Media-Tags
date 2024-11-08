@@ -8,6 +8,8 @@ import (
 // compile time check for the struct implementing the interface
 var _ IMediaService = (*mediaService)(nil)
 
+//go:generate go run go.uber.org/mock/mockgen -source $GOFILE -typed -destination ../generated/mock/services/mock_$GOFILE IMediaService
+
 type IMediaService interface {
 	IBaseService[domain.Media]
 	FilterByTagOption(tag string) Option[domain.Media]

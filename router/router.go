@@ -113,6 +113,7 @@ func (api *TaggedMediaAPI) configureControllers() {
 	api.mediaController = controllers.MediaController{
 		MediaService: mediaService,
 		TagService:   tagService,
+		IsTest:       false,
 	}
 
 }
@@ -138,7 +139,7 @@ func (api *TaggedMediaAPI) configureRoutes() {
 
 		// Media
 
-		CreateMedia:  api.mediaController.CreateTag,
+		CreateMedia:  api.mediaController.CreateMedia,
 		GetMedia:     api.mediaController.GetMedia,
 		GetMediaById: api.mediaController.GetMediaWithId,
 	}
