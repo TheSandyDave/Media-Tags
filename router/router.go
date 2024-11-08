@@ -56,7 +56,7 @@ func (api *TaggedMediaAPI) Configure(ctx context.Context) *gin.Engine {
 	api.configureDatabase(ctx)
 	api.configureErrorHandlers(ctx)
 	api.configureControllers()
-	api.configureRoutes(ctx)
+	api.configureRoutes()
 
 	if err := api.database.AutoMigrate(domain.Models...); err != nil {
 		logger.Fatal(err)
@@ -68,7 +68,7 @@ func (api *TaggedMediaAPI) configureDatabase(ctx context.Context) {
 	logger := utils.NewLogger(ctx)
 
 	if api.database == nil {
-		database, err := gorm.Open(sqlite.Open(":memory:"))
+		database, err := gorm.Open(sqlite.Open("db"))
 		if err != nil {
 			logger.WithError(err).Fatal("failed to configure database")
 		}
@@ -115,8 +115,12 @@ func (api *TaggedMediaAPI) configureControllers() {
 
 }
 
-func (api *TaggedMediaAPI) configureRoutes(ctx context.Context) {
+func (api *TaggedMediaAPI) configureRoutes() {
+	// Setup swagger UI
 	api.router.GET("/swagger/*any", gin.WrapH(http.StripPrefix("/swagger", swaggerui.Handler(api.Spec))))
+
+	// Media file storage
+	api.router.StaticFS("/files", gin.Dir("static", false))
 
 	handlers := restgen.Handlers{
 		// Tags

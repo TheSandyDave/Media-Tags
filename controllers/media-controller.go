@@ -5,6 +5,8 @@ import (
 	"errors"
 	"fmt"
 	"mime/multipart"
+	"path/filepath"
+	"strings"
 
 	apierrors "github.com/TheSandyDave/Media-Tags/api_errors"
 	"github.com/TheSandyDave/Media-Tags/conversion"
@@ -61,8 +63,6 @@ func (controller *MediaController) CreateTag(c *gin.Context) {
 		File *multipart.FileHeader `form:"file"`
 	}
 	create(c, func(ctx context.Context, input createMediaInput) (*restgen.Media, error) {
-		//TODO: actual file upload
-
 		// Check that all the tags actually exist
 		tagIds, err := utils.StringSliceToUUID(input.Tags)
 		if err != nil {
@@ -81,10 +81,22 @@ func (controller *MediaController) CreateTag(c *gin.Context) {
 		if input.File == nil {
 			return nil, errors.New("Missing file")
 		}
+		//validate that the content is an image
+		if !strings.Contains(input.File.Header.Get("Content-Type"), "image") {
+			return nil, errors.New("Uploaded file must be an image")
+		}
+
+		// replace the file name with a UUID to avoid overwritting if multiple uploads have the same name
+		filename := fmt.Sprintf("%s%s", uuid.NewString(), filepath.Ext(input.File.Filename))
+		err = c.SaveUploadedFile(input.File, fmt.Sprintf("static/%s", filename))
+		if err != nil {
+			return nil, err
+		}
+
 		media := &domain.Media{
 			Name:    input.Name,
 			Tags:    tags,
-			FileUrl: fmt.Sprintf("placeholder.domain/%s", input.File.Filename),
+			FileUrl: fmt.Sprintf("%s/files/%s", c.Request.Host, filename),
 		}
 
 		if err := controller.MediaService.Create(ctx, media); err != nil {
