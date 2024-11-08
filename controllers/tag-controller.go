@@ -3,6 +3,7 @@ package controllers
 import (
 	"context"
 
+	apierrors "github.com/TheSandyDave/Media-Tags/api_errors"
 	"github.com/TheSandyDave/Media-Tags/conversion"
 	"github.com/TheSandyDave/Media-Tags/domain"
 	restgen "github.com/TheSandyDave/Media-Tags/generated/api"
@@ -40,6 +41,11 @@ func (controller *TagController) GetTagWithId(c *gin.Context) {
 
 func (controller *TagController) CreateTag(c *gin.Context) {
 	create(c, func(ctx context.Context, input restgen.CreateTag) (*restgen.Tag, error) {
+
+		if input.Name == "" {
+			return nil, apierrors.NewRequiredValueMissingError("name")
+		}
+
 		tag := &domain.Tag{
 			Name: input.Name,
 		}

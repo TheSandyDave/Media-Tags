@@ -73,6 +73,9 @@ func (controller *MediaController) CreateMedia(c *gin.Context) {
 			return nil, apierrors.NewInvalidFileTypeError("image")
 		}
 
+		if len(input.Tags) == 0 {
+			return nil, apierrors.NewRequiredValueMissingError("tags")
+		}
 		tagIds, err := utils.StringSliceToUUID(input.Tags)
 		if err != nil {
 			return nil, err
@@ -88,6 +91,10 @@ func (controller *MediaController) CreateMedia(c *gin.Context) {
 			}
 		}
 
+		if input.Name == "" {
+			return nil, apierrors.NewRequiredValueMissingError("name")
+
+		}
 		// replace the file name with a UUID to avoid overwritting if multiple uploads have the same name
 		filename := fmt.Sprintf("%s%s", uuid.NewString(), filepath.Ext(input.File.Filename))
 
